@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>create</title>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script>
+    // var obj1 = {
+    //     'name': 'obj1'
+    // };
+    // var obj2 = Object.create(obj1);
+    // var obj = Object.create(null); // {No properties}
+    // console.log(obj2);
+
+    // var obj2 = Object.create('');
+    // var obj2 = Object.create(123);
+    // var obj2 = Object.create(true);
+    // var obj2 = Object.create(Symbol());
+    // var obj2 = Object.create(BigInt());
+
+    // create 自定义原型属性,属性只能是 null 和 Object 对象,如果为 null 那么就无属性,否则原型就是 我们传入的 参数
+    Object.prototype.createObj = function (properties) {
+
+        var type = {
+            'obj': {},
+            'setObj': function (prop) {
+                prop = arguments[0] || null;
+                this.obj.__proto__ = prop;
+                return this.obj;
+            },
+            '[object Null]': function () {
+                return this.setObj(null);
+            },
+            '[object Object]': function () {
+                return this.setObj(properties);
+            },
+        }[Object.prototype.toString.call(properties)]();
+
+        if (type) return type;
+
+        throw new TypeError('createObj: properties Can only be Object or null:\t' + properties);
+    }
+
+
+
+    var obj1 = Object.createObj(null);
+    console.log(obj1);
+    var obj2 = Object.createObj({ name: 'obj2' });
+    console.log(obj2);
+
+
+    Object.prototype.myCreate = function (properties) {
+        var type = {
+            'number': 1,
+            'string': 2,
+            'boolean': 3,
+            'object': function () {
+                if (properties == null) {
+                    return false;
+                } else if (!Array.isArray(properties)) {
+                    return false;
+                }
+                return true;
+            },
+            'function': 5,
+            'undefined': 6,
+            'Symbol': 7
+        }, obj = {};
+        if (!type[typeof properties] || (typeof type[typeof properties] === 'function' && type[typeof properties])) {
+            obj.__proto__ = properties;
+            return obj;
+        }
+        throw new TypeError('myCreate: properties Can only be Object or null:\t' + properties);
+    }
+    var obj1 = Object.myCreate(null);
+    console.log(obj1);
+    var obj2 = Object.myCreate({ name: 'obj2' });
+    console.log(obj2);
+    // console.log(Object.myCreate(''));
+    // console.log(Object.myCreate(123));
+</script>
